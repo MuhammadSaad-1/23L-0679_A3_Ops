@@ -1,0 +1,56 @@
+services:
+  # MongoDB Service (Primary Database - Private & Isolated)
+  mongodb:
+    image: mongo:7.0
+    container_name: assignment3_mongodb
+    restart: "no"
+    expose:
+      - "27017"
+    labels:
+      maintainer: "Student 23L-0679"
+      project: "MLOps Assignment 3 - Airflow ETL Pipeline"
+      component: "Primary Database"
+      security_level: "internal-isolated"
+      version: "1.0"
+      description: "Secure, persistent MongoDB instance for daily currency exchange rates"
+    env_file:
+      - .env
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - airflow
+
+  # Mongo Express Service (Web Administration Interface)
+  mongo-express:
+    image: mongo-express:1.0.2-20
+    container_name: assignment3_mongo_express
+    restart: "no"
+    labels:
+      maintainer: "Student 23L-0679"
+      project: "MLOps Assignment 3 - Airflow ETL Pipeline"
+      component: "Web Administration Interface"
+      version: "1.0"
+      description: "Web-based administration GUI for MongoDB with basic authentication"
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - airflow
+
+# Persistent Storage Volume Configuration
+volumes:
+  mongodb_data:
+    name: assignment3_mongodb_data
+    labels:
+      project: "MLOps Assignment 3"
+      component: "Persistent Storage"
+      description: "Persistent Docker volume retaining MongoDB records across container restarts"
+
+# Docker Networking: Connect to Astro's Exact Airflow Network
+networks:
+  airflow:
+    name: assignment-3_587401_airflow
+    external: true
